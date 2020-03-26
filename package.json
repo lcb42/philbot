@@ -1,0 +1,11 @@
+{
+  "name": "discord_phil_bot",
+  "version": "1.0.0",
+  "description": "baaaa",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
