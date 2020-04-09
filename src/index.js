@@ -22,6 +22,8 @@ for (const file of mentionFiles) {
 	const mention = require(`${__dirname}/mentions/${file}`);
 	client.mentions.set(mention.name, mention);
 }
+//Cooldowns
+const cooldowns = new Discord.Collection();
 /**
  * The ready event is vital, it means that only _after_ this will your bot start reacting to information
  * received from Discord
@@ -32,6 +34,9 @@ client.on('ready', () => {
 
 // Create an event listener for messages
 client.on('message', message => {
+	console.log(config.included_guidlds);
+	if (config.included_guidlds && !config.included_guidlds.find(guildid => message.guild.id == guildid)) return;
+	if (config.excluded_guidlds && config.excluded_guidlds.find(guildid => message.guild.id == guildid)) return;
 	//if (message.author == client.users.fetch("JamesTheSheep#8509")){
 	//	message.reply("Baaaaa");
 	//}
@@ -54,12 +59,23 @@ client.on('message', message => {
 			}
 		}
 		
-
+		
 		const args = message.content.split(/ +/);
-		if (!args[1].startsWith(config.prefix)) return message.channel.send("Baaa, I didn't Quite Catch that");
-		const commandName = args[1].slice(config.prefix.length).toLowerCase();
+		//Get rid of mention
+		args.shift();
+		if (!args[0].startsWith(config.prefix)) return message.channel.send("Baaa, I didn't Quite Catch that");//Is a command?
+		const commandName = args[0].slice(config.prefix.length).toLowerCase();
+		args.shift();//Get rid of name
 		const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-		if (!client.commands.has(commandName)) return message.reply('Baaa, I couldn\'t find that command!');
+		if (!command) return message.reply('Baaa, I couldn\'t find that command!');
+		if (!cooldown(command, message.author)) return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
+		if (command.args != args.length) {
+			let reply = `You didn't provide enough arguments, ${message.author}!`;
+			if (command.usage) {
+				reply += `\nThe proper usage would be: ${prefix}${command.name} ${command.usage}`;
+			}
+			return message.channel.send(reply);
+		}
 		try {
 			return command.execute(message, args);
 		} catch (error) {
@@ -80,4 +96,25 @@ function getSotonColour(){
 		currentSotonColour = true;
 		return 0x990000;
 	}
+}
+function cooldown(command, user){
+	if (!cooldowns.has(command.name)) {
+		cooldowns.set(command.name, new Discord.Collection());
+	}
+
+	const now = Date.now();
+	const timestamps = cooldowns.get(command.name);
+	const cooldownAmount = (command.cooldown || 1) * 1000;
+
+	if (timestamps.has(user.id)) {
+		const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+
+		if (now < expirationTime) {
+			const timeLeft = (expirationTime - now) / 1000;
+			return false;
+		}
+	}
+	timestamps.set(message.author.id, now);
+	setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+	return true;
 }
