@@ -34,9 +34,8 @@ client.on('ready', () => {
 
 // Create an event listener for messages
 client.on('message', message => {
-	console.log(config.included_guidlds);
-	if (config.included_guidlds && !config.included_guidlds.find(guildid => message.guild.id == guildid)) return;
-	if (config.excluded_guidlds && config.excluded_guidlds.find(guildid => message.guild.id == guildid)) return;
+	if (message.guild && config.included_guidlds && !config.included_guidlds.find(guildid => message.guild.id == guildid)) return;
+	if (message.guild && config.excluded_guidlds && config.excluded_guidlds.find(guildid => message.guild.id == guildid)) return;
 	//if (message.author == client.users.fetch("JamesTheSheep#8509")){
 	//	message.reply("Baaaaa");
 	//}
@@ -69,10 +68,10 @@ client.on('message', message => {
 		const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 		if (!command) return message.reply('Baaa, I couldn\'t find that command!');
 		if (!cooldown(command, message.author)) return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
-		if (command.args != args.length) {
+		if (command.args && command.args != args.length) {
 			let reply = `You didn't provide enough arguments, ${message.author}!`;
 			if (command.usage) {
-				reply += `\nThe proper usage would be: ${prefix}${command.name} ${command.usage}`;
+				reply += `\nThe proper usage would be: ${config.prefix}${command.name} ${command.usage}`;	
 			}
 			return message.channel.send(reply);
 		}
@@ -114,7 +113,7 @@ function cooldown(command, user){
 			return false;
 		}
 	}
-	timestamps.set(message.author.id, now);
-	setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+	timestamps.set(user.id, now);
+	setTimeout(() => timestamps.delete(user.id), cooldownAmount);
 	return true;
 }
