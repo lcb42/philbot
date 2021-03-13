@@ -80,4 +80,5 @@ typings/
 
 #Eclipse Preferences
 .settings/
-.projectsrc/passwords.json
+.project
+src/passwords.json

@@ -9,6 +9,7 @@ const fileSystem = require('fs');
 const Discord = require('discord.js');
 // Load the config file
 const config = require('./config.json');
+const passwords = require('./passwords.json');
 // Create an instance of a Discord client
 const client = new Discord.Client({
     ws: { intents: ["GUILDS", "GUILD_MESSAGES"] }
@@ -91,7 +92,7 @@ client.on('message', message => {
 });
 // Log our bot in using the token from
 // https://discordapp.com/developers/applications/me
-client.login(config.token);
+client.login(passwords.token);
 var currentSotonColour = false;
 module.exports.getSotonColour = function(){
 	if (currentSotonColour){
