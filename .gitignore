@@ -81,4 +81,9 @@ typings/
 #Eclipse Preferences
 .settings/
 .project
+
+#Temp Files
+*.save
+
+#Secret Data
 src/passwords.json
