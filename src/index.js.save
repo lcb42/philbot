@@ -1,3 +1,4 @@
+
 /**
  * A ping pong bot, whenever you send "ping", it replies "pong".
  */
@@ -10,9 +11,7 @@ const Discord = require('discord.js');
 // Load the config file
 const config = require('./config.json');
 // Create an instance of a Discord client
-const client = new Discord.Client({
-    ws: { intents: ["GUILDS", "GUILD_MESSAGES"] }
-});
+const client = new Discord.Client();
 // Read the command files in the commands directory
 client.commands = new Discord.Collection();
 client.mentions = new Discord.Collection();

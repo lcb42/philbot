@@ -1,0 +1,9 @@
+[Unit]
+Description=Phil Discord Bot.
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/node /home/pi/Documents/philbot/src/index.js
+
+[Install]
+WantedBy=multi-user.target
