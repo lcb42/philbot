@@ -84,6 +84,7 @@ typings/
 
 #Temp Files
 *.save
+*.swp
 
 #Secret Data
 src/passwords.json
